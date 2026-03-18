@@ -1,7 +1,7 @@
 ﻿using Moq;
-using QuizTest.Core.Contracts;
-using QuizTest.Core.Domain;
-using QuizTest.Core.Services;
+using QuizTest.Application.Contracts;
+using QuizTest.Application.Services;
+using QuizTest.Domain;
 
 namespace QuizTest.Tests;
 

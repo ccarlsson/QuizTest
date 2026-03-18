@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuizTest.Core.Contracts;
-using QuizTest.Core.Services;
+using QuizTest.Application.Contracts;
+using QuizTest.Application.Services;
 
 namespace QuizTest.Core.DependencyInjection;
 
