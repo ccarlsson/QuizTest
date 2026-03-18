@@ -193,6 +193,7 @@ public sealed class SpectreQuizUi : IQuizUi
 
         resultsTable.AddRow("Correct answers", $"[bold]{correctAnswerCount}[/] of [bold]{totalQuestions}[/]");
         resultsTable.AddRow("Score", $"[{scoreColor}]{scorePercent:0}%[/]");
+        resultsTable.AddRow("Performance", $"[{scoreColor}]{(scorePercent >= 70 ? "Excellent" : scorePercent >= 40 ? "Good" : "Needs Improvement")}[/]");
 
         AnsiConsole.Write(
             new Panel(resultsTable)
