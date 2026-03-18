@@ -3,21 +3,6 @@ using QuizTest.Domain;
 namespace QuizTest.Contracts;
 
 /// <summary>
-/// Specifies the visual style for the loading status spinner.
-/// </summary>
-public enum QuizLoadingStyle
-{
-    /// <summary>
-    /// Displays a dots-based loading spinner.
-    /// </summary>
-    Dots,
-    /// <summary>
-    /// Displays a star-based loading spinner.
-    /// </summary>
-    Star
-}
-
-/// <summary>
 /// Defines the contract for the quiz user interface.
 /// </summary>
 public interface IQuizUi
@@ -47,14 +32,19 @@ public interface IQuizUi
     QuizCategory? PromptCategory(List<QuizCategory> categories);
 
     /// <summary>
-    /// Executes an asynchronous action while displaying a loading status.
+    /// Fetches quiz categories while displaying a loading status.
     /// </summary>
-    /// <typeparam name="T">The result type of the asynchronous action.</typeparam>
-    /// <param name="message">The message to display during the loading status.</param>
-    /// <param name="action">The asynchronous action to execute.</param>
-    /// <param name="style">The visual style of the loading spinner.</param>
-    /// <returns>A task that returns the result of the action.</returns>
-    Task<T> RunStatusAsync<T>(string message, Func<Task<T>> action, QuizLoadingStyle style);
+    /// <param name="action">The asynchronous action that retrieves the categories.</param>
+    /// <returns>A task that returns the list of available quiz categories.</returns>
+    Task<List<QuizCategory>> FetchCategoriesAsync(Func<Task<List<QuizCategory>>> action);
+
+    /// <summary>
+    /// Fetches quiz questions while displaying a loading status.
+    /// </summary>
+    /// <param name="questionCount">The number of questions being fetched, used in the loading message.</param>
+    /// <param name="action">The asynchronous action that retrieves the questions.</param>
+    /// <returns>A task that returns the list of quiz questions.</returns>
+    Task<List<QuizQuestion>> FetchQuestionsAsync(int questionCount, Func<Task<List<QuizQuestion>>> action);
 
     /// <summary>
     /// Displays a quiz question and prompts the user to select an answer.

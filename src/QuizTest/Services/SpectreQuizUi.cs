@@ -72,28 +72,30 @@ public sealed class SpectreQuizUi : IQuizUi
     }
 
     /// <summary>
-    /// Executes an asynchronous action and displays a loading status with a spinner.
+    /// Fetches quiz categories while displaying a dots loading spinner.
     /// </summary>
-    /// <typeparam name="T">The type of the result returned by the action.</typeparam>
-    /// <param name="message">The message to display during loading.</param>
-    /// <param name="action">The asynchronous action to execute.</param>
-    /// <param name="style">The loading spinner style to display.</param>
-    /// <returns>A task that represents the asynchronous operation and returns the action's result.</returns>
-    public Task<T> RunStatusAsync<T>(string message, Func<Task<T>> action, QuizLoadingStyle style)
+    /// <param name="action">The asynchronous action that retrieves the categories.</param>
+    /// <returns>A task that returns the list of available quiz categories.</returns>
+    public Task<List<QuizCategory>> FetchCategoriesAsync(Func<Task<List<QuizCategory>>> action)
     {
-        var spinner = style switch
-        {
-            QuizLoadingStyle.Dots => Spinner.Known.Dots,
-            QuizLoadingStyle.Star => Spinner.Known.Star,
-            _ => Spinner.Known.Dots
-        };
-
-        var spinnerColor = style == QuizLoadingStyle.Star ? "deepskyblue1" : "cadetblue";
-
         return AnsiConsole.Status()
-            .Spinner(spinner)
-            .SpinnerStyle(Style.Parse(spinnerColor))
-            .StartAsync(message, _ => action());
+            .Spinner(Spinner.Known.Dots)
+            .SpinnerStyle(Style.Parse("cadetblue"))
+            .StartAsync("[grey]Fetching categories...[/]", _ => action());
+    }
+
+    /// <summary>
+    /// Fetches quiz questions while displaying a star loading spinner.
+    /// </summary>
+    /// <param name="questionCount">The number of questions being fetched, used in the loading message.</param>
+    /// <param name="action">The asynchronous action that retrieves the questions.</param>
+    /// <returns>A task that returns the list of quiz questions.</returns>
+    public Task<List<QuizQuestion>> FetchQuestionsAsync(int questionCount, Func<Task<List<QuizQuestion>>> action)
+    {
+        return AnsiConsole.Status()
+            .Spinner(Spinner.Known.Star)
+            .SpinnerStyle(Style.Parse("deepskyblue1"))
+            .StartAsync($"[grey]Fetching {questionCount} questions from API...[/]", _ => action());
     }
 
     /// <summary>

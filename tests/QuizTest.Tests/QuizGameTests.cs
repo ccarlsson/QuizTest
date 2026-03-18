@@ -23,17 +23,14 @@ public class QuizGameTests
         uiMock.Setup(x => x.PromptQuestionCount()).Returns(2);
         uiMock.Setup(x => x.PromptCategory(categories)).Returns(categories[0]);
 
-        uiMock.Setup(x => x.RunStatusAsync(
-                It.IsAny<string>(),
-                It.IsAny<Func<Task<List<QuizCategory>>>>(),
-                QuizLoadingStyle.Dots))
-            .Returns((string _, Func<Task<List<QuizCategory>>> action, QuizLoadingStyle _) => action());
+        uiMock.Setup(x => x.FetchCategoriesAsync(
+                It.IsAny<Func<Task<List<QuizCategory>>>>()))
+            .Returns((Func<Task<List<QuizCategory>>> action) => action());
 
-        uiMock.Setup(x => x.RunStatusAsync(
-                It.IsAny<string>(),
-                It.IsAny<Func<Task<List<QuizQuestion>>>>(),
-                QuizLoadingStyle.Star))
-            .Returns((string _, Func<Task<List<QuizQuestion>>> action, QuizLoadingStyle _) => action());
+        uiMock.Setup(x => x.FetchQuestionsAsync(
+                It.IsAny<int>(),
+                It.IsAny<Func<Task<List<QuizQuestion>>>>()))
+            .Returns((int _, Func<Task<List<QuizQuestion>>> action) => action());
 
         apiClientMock.Setup(x => x.GetCategoriesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(categories);
         apiClientMock.Setup(x => x.GetQuestionsAsync(2, "easy", 9, It.IsAny<CancellationToken>())).ReturnsAsync(questions);
@@ -70,17 +67,14 @@ public class QuizGameTests
         uiMock.Setup(x => x.PromptQuestionCount()).Returns(15);
         uiMock.Setup(x => x.PromptCategory(categories)).Returns(categories[0]);
 
-        uiMock.Setup(x => x.RunStatusAsync(
-                It.IsAny<string>(),
-                It.IsAny<Func<Task<List<QuizCategory>>>>(),
-                QuizLoadingStyle.Dots))
-            .Returns((string _, Func<Task<List<QuizCategory>>> action, QuizLoadingStyle _) => action());
+        uiMock.Setup(x => x.FetchCategoriesAsync(
+                It.IsAny<Func<Task<List<QuizCategory>>>>()))
+            .Returns((Func<Task<List<QuizCategory>>> action) => action());
 
-        uiMock.Setup(x => x.RunStatusAsync(
-                It.IsAny<string>(),
-                It.IsAny<Func<Task<List<QuizQuestion>>>>(),
-                QuizLoadingStyle.Star))
-            .Returns((string _, Func<Task<List<QuizQuestion>>> action, QuizLoadingStyle _) => action());
+        uiMock.Setup(x => x.FetchQuestionsAsync(
+                It.IsAny<int>(),
+                It.IsAny<Func<Task<List<QuizQuestion>>>>()))
+            .Returns((int _, Func<Task<List<QuizQuestion>>> action) => action());
 
         apiClientMock.Setup(x => x.GetCategoriesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(categories);
         apiClientMock.Setup(x => x.GetQuestionsAsync(15, "hard", 17, It.IsAny<CancellationToken>()))
@@ -112,17 +106,14 @@ public class QuizGameTests
         uiMock.Setup(x => x.PromptQuestionCount()).Returns(10);
         uiMock.Setup(x => x.PromptCategory(categories)).Returns((QuizCategory?)null);
 
-        uiMock.Setup(x => x.RunStatusAsync(
-                It.IsAny<string>(),
-                It.IsAny<Func<Task<List<QuizCategory>>>>(),
-                QuizLoadingStyle.Dots))
-            .Returns((string _, Func<Task<List<QuizCategory>>> action, QuizLoadingStyle _) => action());
+        uiMock.Setup(x => x.FetchCategoriesAsync(
+                It.IsAny<Func<Task<List<QuizCategory>>>>()))
+            .Returns((Func<Task<List<QuizCategory>>> action) => action());
 
-        uiMock.Setup(x => x.RunStatusAsync(
-                It.IsAny<string>(),
-                It.IsAny<Func<Task<List<QuizQuestion>>>>(),
-                QuizLoadingStyle.Star))
-            .Returns((string _, Func<Task<List<QuizQuestion>>> action, QuizLoadingStyle _) => action());
+        uiMock.Setup(x => x.FetchQuestionsAsync(
+                It.IsAny<int>(),
+                It.IsAny<Func<Task<List<QuizQuestion>>>>()))
+            .Returns((int _, Func<Task<List<QuizQuestion>>> action) => action());
 
         apiClientMock.Setup(x => x.GetCategoriesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(categories);
         apiClientMock.Setup(x => x.GetQuestionsAsync(10, "medium", null, It.IsAny<CancellationToken>()))
