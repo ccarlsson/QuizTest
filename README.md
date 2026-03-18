@@ -9,8 +9,8 @@ The solution is split into:
 - `QuizTest.Domain` for domain models (no external dependencies).
 - `QuizTest.Application` for use-case logic and application contracts (depends only on Domain).
 - `QuizTest.Infrastructure` for external integrations (API client, data access adapters).
-- `QuizTest.Core` for DI composition (composes all layers).
-- `QuizTest` for console UI and app entry point.
+- `QuizTest.Core` for library composition (no DI framework dependency—purely orchestrates layers).
+- `QuizTest` for console UI, composition root, and app entry point.
 
 ## Features
 
@@ -41,7 +41,7 @@ dotnet test
 
 ## Dependency Injection
 
-Core service registration is exposed through an extension method:
+Service registration is configured in the UI project's composition root:
 
 ```csharp
 services.AddQuizCore();
@@ -61,48 +61,47 @@ Dependency direction (clean architecture):
 
 ```mermaid
 flowchart LR
-  UI[QuizTest\nConsole UI]
-  Core[QuizTest.Core\nDI Composition]
-  Application[QuizTest.Application\nUse Cases]
-  Infrastructure[QuizTest.Infrastructure\nAPI Adapters]
-  Domain[QuizTest.Domain\nModels]
-  Api[Open Trivia DB API]
+  UI[QuizTest<br/>Composition Root]
+  Infrastructure[QuizTest.Infrastructure<br/>API Adapters]
+  Application[QuizTest.Application<br/>Use Cases + Contracts]
+  Domain[QuizTest.Domain<br/>Models]
+  Api[Open Trivia DB<br/>API]
 
-  UI -->|references| Core
-  Core -->|references| Application
-  Application -->|no external deps| Domain
+  UI -->|references| Infrastructure
+  UI -->|references| Application
   Infrastructure -->|implements contracts| Application
   Infrastructure -->|uses| Domain
+  Application -->|depends on| Domain
   Infrastructure -->|HTTP calls| Api
 ```
 
-Runtime flow:
-
-- `Program.cs` calls `AddQuizCore()` to wire all layers.
-- `AddQuizCore()` registers Infrastructure implementations of Application contracts (`IQuizApiClient` -> `QuizApiClient`).
-- Application services (`QuizGame`, `RandomAnswerShuffler`) are configured as dependencies.
-- UI registers `IQuizUi` implementation with `SpectreQuizUi`.
-- Inner layers (Application, Domain, Infrastructure) have no dependency on UI or external frameworks.
+**Inner layers have zero framework dependencies:**
+- Domain: pure models, no external packages
+- Application: use cases + contracts, depends only on Domain
+- Infrastructure: API adapters, depends on Application + Domain
+- Core: orchestrates layers (no code needed, kept for future expansion)
+- UI: console app + composition root, only layer with Microsoft.Extensions.DependencyInjection and Spectre.Console
 
 ## Project Structure
 
 ```zsh
 src/
   QuizTest.Domain/
-    Domain/          # Domain models (QuizQuestion, QuizCategory)
+    Domain/                 # Domain models (QuizQuestion, QuizCategory)
   QuizTest.Application/
-    Contracts/       # Application contracts (IQuizApiClient, IQuizUi, IAnswerShuffler)
-    Services/        # Application use-case logic (QuizGame, RandomAnswerShuffler)
+    Contracts/              # Application Ports: IQuizApiClient, IQuizUi, IAnswerShuffler
+    Services/               # Use-case logic: QuizGame, RandomAnswerShuffler
   QuizTest.Infrastructure/
-    Integrations/OpenTrivia/ # OpenTrivia API response models
-    QuizApiClient.cs        # Open Trivia API adapter implementing IQuizApiClient
+    Integrations/OpenTrivia/ # OpenTrivia API DTOs
+    QuizApiClient.cs         # Open Trivia API adapter (implements IQuizApiClient)
   QuizTest.Core/
-    DependencyInjection/    # IServiceCollection extensions (AddQuizCore)
+    (orchestration—no code, kept for future composites)
   QuizTest/
-    Services/        # UI implementation (Spectre.Console, QuizTest.Ui.Services)
-    Program.cs       # Entry point and DI composition
+    DependencyInjection/    # `AddQuizCore()` extension method
+    Services/               # UI adapter: SpectreQuizUi (implements IQuizUi)
+    Program.cs              # Composition root (entry point)
 tests/
-  QuizTest.Tests/    # xUnit tests with Moq
+  QuizTest.Tests/          # xUnit + Moq integration tests
 ```
 
 ## Tech Stack

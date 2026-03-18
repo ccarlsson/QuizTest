@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\QuizTest.Application\QuizTest.Application.csproj" />
-    <ProjectReference Include="..\QuizTest.Core\QuizTest.Core.csproj" />
+    <ProjectReference Include="..\QuizTest.Infrastructure\QuizTest.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿using QuizTest.Core.DependencyInjection;
+﻿using QuizTest.DependencyInjection;
 using QuizTest.Application.Contracts;
 using QuizTest.Application.Services;
 using QuizTest.Ui.Services;

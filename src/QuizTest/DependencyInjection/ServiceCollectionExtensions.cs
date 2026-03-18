@@ -3,7 +3,7 @@ using QuizTest.Application.Contracts;
 using QuizTest.Application.Services;
 using QuizTest.Infrastructure;
 
-namespace QuizTest.Core.DependencyInjection;
+namespace QuizTest.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
