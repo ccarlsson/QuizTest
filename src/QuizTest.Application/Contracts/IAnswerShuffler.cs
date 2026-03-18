@@ -1,6 +1,6 @@
-using QuizTest.Core.Domain;
+using QuizTest.Domain;
 
-namespace QuizTest.Core.Contracts;
+namespace QuizTest.Application.Contracts;
 
 /// <summary>
 /// Defines the contract for shuffling answer options for quiz questions.

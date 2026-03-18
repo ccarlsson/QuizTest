@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="src/QuizTest.Domain/QuizTest.Domain.csproj" />
+  <Project Path="src/QuizTest.Application/QuizTest.Application.csproj" />
   <Project Path="src/QuizTest.Core/QuizTest.Core.csproj" />
   <Project Path="tests/QuizTest.Tests/QuizTest.Tests.csproj" />
   <Project Path="src/QuizTest/QuizTest.csproj" />

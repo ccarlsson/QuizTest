@@ -6,7 +6,9 @@ A console-based multiple-choice quiz game built with .NET 10, powered by the [Op
 
 The solution is split into:
 
-- `QuizTest.Core` for game logic, contracts, domain models, API integration, and DI registration.
+- `QuizTest.Domain` for domain models.
+- `QuizTest.Application` for use-case logic and application contracts.
+- `QuizTest.Core` for API integration and DI registration.
 - `QuizTest` for console UI and app composition.
 
 ## Features
@@ -59,31 +61,39 @@ Dependency direction:
 ```mermaid
 flowchart LR
   UI[QuizTest\nConsole UI + Program.cs]
-  Core[QuizTest.Core\nGame Logic + API Client + Contracts + Domain]
+  Application[QuizTest.Application\nUse Cases + Contracts]
+  Domain[QuizTest.Domain\nModels]
+  Core[QuizTest.Core\nAPI Client + DI Registration]
   Api[Open Trivia DB API]
 
+  UI -->|references| Application
   UI -->|references| Core
+  Application -->|references| Domain
+  Core -->|implements application contracts| Application
+  Core -->|uses| Domain
   Core -->|HTTP calls| Api
 ```
 
 Runtime flow:
 
 - `Program.cs` builds the DI container.
-- `AddQuizCore()` registers core services (`IQuizApiClient`, `IAnswerShuffler`, `QuizGame`).
+- `AddQuizCore()` registers API client and application services (`IQuizApiClient`, `IAnswerShuffler`, `QuizGame`).
 - UI registers `IQuizUi` with `SpectreQuizUi`.
-- `QuizGame` orchestrates gameplay through contracts and domain models in `QuizTest.Core`.
+- `QuizGame` orchestrates gameplay through contracts in `QuizTest.Application` and models in `QuizTest.Domain`.
 
 ## Project Structure
 
 ```zsh
 src/
-  QuizTest.Core/
-    Contracts/       # Interfaces (IQuizApiClient, IQuizUi, IAnswerShuffler)
-    DependencyInjection/ # IServiceCollection extensions (AddQuizCore)
+  QuizTest.Domain/
     Domain/          # Domain models (QuizQuestion, QuizCategory)
+  QuizTest.Application/
+    Contracts/       # Application contracts (IQuizApiClient, IQuizUi, IAnswerShuffler)
+    Services/        # Application use-case logic (QuizGame, RandomAnswerShuffler)
+  QuizTest.Core/
+    DependencyInjection/ # IServiceCollection extensions (AddQuizCore)
     Integrations/    # OpenTrivia API response models
-    Services/        # Core game logic and answer shuffling
-    QuizApiClient.cs # HTTP client for Open Trivia API
+    QuizApiClient.cs # Open Trivia API adapter implementing IQuizApiClient
   QuizTest/
     Services/        # UI implementation (Spectre.Console, QuizTest.Ui.Services)
     Program.cs       # Entry point and DI composition

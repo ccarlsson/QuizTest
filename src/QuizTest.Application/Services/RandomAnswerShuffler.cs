@@ -1,7 +1,7 @@
-using QuizTest.Core.Contracts;
-using QuizTest.Core.Domain;
+using QuizTest.Application.Contracts;
+using QuizTest.Domain;
 
-namespace QuizTest.Core.Services;
+namespace QuizTest.Application.Services;
 
 public sealed class RandomAnswerShuffler : IAnswerShuffler
 {
