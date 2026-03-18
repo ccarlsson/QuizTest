@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace QuizTest.Core.Integrations.OpenTrivia;
+namespace QuizTest.Infrastructure.Integrations.OpenTrivia;
 
 public record OpenTriviaQuizResponse(
     [property: JsonPropertyName("response_code")] int ResponseCode,

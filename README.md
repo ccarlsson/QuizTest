@@ -6,10 +6,11 @@ A console-based multiple-choice quiz game built with .NET 10, powered by the [Op
 
 The solution is split into:
 
-- `QuizTest.Domain` for domain models.
-- `QuizTest.Application` for use-case logic and application contracts.
-- `QuizTest.Core` for API integration and DI registration.
-- `QuizTest` for console UI and app composition.
+- `QuizTest.Domain` for domain models (no external dependencies).
+- `QuizTest.Application` for use-case logic and application contracts (depends only on Domain).
+- `QuizTest.Infrastructure` for external integrations (API client, data access adapters).
+- `QuizTest.Core` for DI composition (composes all layers).
+- `QuizTest` for console UI and app entry point.
 
 ## Features
 
@@ -56,30 +57,32 @@ services.AddQuizCore(
 
 ## Architecture
 
-Dependency direction:
+Dependency direction (clean architecture):
 
 ```mermaid
 flowchart LR
-  UI[QuizTest\nConsole UI + Program.cs]
-  Application[QuizTest.Application\nUse Cases + Contracts]
+  UI[QuizTest\nConsole UI]
+  Core[QuizTest.Core\nDI Composition]
+  Application[QuizTest.Application\nUse Cases]
+  Infrastructure[QuizTest.Infrastructure\nAPI Adapters]
   Domain[QuizTest.Domain\nModels]
-  Core[QuizTest.Core\nAPI Client + DI Registration]
   Api[Open Trivia DB API]
 
-  UI -->|references| Application
   UI -->|references| Core
-  Application -->|references| Domain
-  Core -->|implements application contracts| Application
-  Core -->|uses| Domain
-  Core -->|HTTP calls| Api
+  Core -->|references| Application
+  Application -->|no external deps| Domain
+  Infrastructure -->|implements contracts| Application
+  Infrastructure -->|uses| Domain
+  Infrastructure -->|HTTP calls| Api
 ```
 
 Runtime flow:
 
-- `Program.cs` builds the DI container.
-- `AddQuizCore()` registers API client and application services (`IQuizApiClient`, `IAnswerShuffler`, `QuizGame`).
-- UI registers `IQuizUi` with `SpectreQuizUi`.
-- `QuizGame` orchestrates gameplay through contracts in `QuizTest.Application` and models in `QuizTest.Domain`.
+- `Program.cs` calls `AddQuizCore()` to wire all layers.
+- `AddQuizCore()` registers Infrastructure implementations of Application contracts (`IQuizApiClient` -> `QuizApiClient`).
+- Application services (`QuizGame`, `RandomAnswerShuffler`) are configured as dependencies.
+- UI registers `IQuizUi` implementation with `SpectreQuizUi`.
+- Inner layers (Application, Domain, Infrastructure) have no dependency on UI or external frameworks.
 
 ## Project Structure
 
@@ -90,10 +93,11 @@ src/
   QuizTest.Application/
     Contracts/       # Application contracts (IQuizApiClient, IQuizUi, IAnswerShuffler)
     Services/        # Application use-case logic (QuizGame, RandomAnswerShuffler)
+  QuizTest.Infrastructure/
+    Integrations/OpenTrivia/ # OpenTrivia API response models
+    QuizApiClient.cs        # Open Trivia API adapter implementing IQuizApiClient
   QuizTest.Core/
-    DependencyInjection/ # IServiceCollection extensions (AddQuizCore)
-    Integrations/    # OpenTrivia API response models
-    QuizApiClient.cs # Open Trivia API adapter implementing IQuizApiClient
+    DependencyInjection/    # IServiceCollection extensions (AddQuizCore)
   QuizTest/
     Services/        # UI implementation (Spectre.Console, QuizTest.Ui.Services)
     Program.cs       # Entry point and DI composition
