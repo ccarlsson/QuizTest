@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using QuizTest.Application.Contracts;
-using QuizTest.Domain;
+using QuizTest.Domain.Quiz;
 using QuizTest.Infrastructure.Integrations.OpenTrivia;
 
 namespace QuizTest.Infrastructure;

@@ -1,4 +1,4 @@
-using QuizTest.Domain;
+using QuizTest.Domain.Quiz;
 
 namespace QuizTest.Application.Contracts;
 

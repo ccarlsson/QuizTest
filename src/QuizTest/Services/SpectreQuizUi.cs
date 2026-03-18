@@ -1,5 +1,5 @@
 using QuizTest.Application.Contracts;
-using QuizTest.Domain;
+using QuizTest.Domain.Quiz;
 using Spectre.Console;
 
 namespace QuizTest.Ui.Services;

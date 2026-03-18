@@ -1,4 +1,4 @@
-namespace QuizTest.Domain;
+namespace QuizTest.Domain.Quiz;
 
 /// <summary>
 /// Represents a quiz category with its identifier and name.
