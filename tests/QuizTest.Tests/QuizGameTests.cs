@@ -330,6 +330,54 @@ uiMock.Setup(x => x.WithStatusAsync(
         uiMock.Verify(x => x.ShowFinalResults(0, 2), Times.Once);
     }
 
+    [Fact]
+    public async Task RunAsync_HandlesNullHtmlDecodeGracefully()
+    {
+        var apiClientMock = new Mock<IQuizApiClient>();
+        var uiMock = new Mock<IQuizUi>();
+        var shufflerMock = new Mock<IAnswerShuffler>();
+
+        var categories = new List<QuizCategory> { new(9, "General Knowledge") };
+        var question = new QuizQuestion(
+            Type: "multiple",
+            Difficulty: Difficulty.Easy,
+            Category: null!,
+            Question: null!,
+            CorrectAnswer: null!,
+            IncorrectAnswers: ["B1", "C1", "D1"]);
+
+        uiMock.Setup(x => x.PromptDifficulty()).Returns(Difficulty.Easy);
+        uiMock.Setup(x => x.PromptQuestionCount()).Returns(1);
+        uiMock.Setup(x => x.PromptCategory(categories)).Returns(categories[0]);
+
+        uiMock.Setup(x => x.WithStatusAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<List<QuizCategory>>>>()))
+            .Returns((string _, Func<Task<List<QuizCategory>>> action) => action());
+
+        uiMock.Setup(x => x.WithStatusAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<List<QuizQuestion>>>>()))
+            .Returns((string _, Func<Task<List<QuizQuestion>>> action) => action());
+
+        apiClientMock.Setup(x => x.GetCategoriesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(categories);
+        apiClientMock.Setup(x => x.GetQuestionsAsync(1, Difficulty.Easy, 9, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([question]);
+
+        shufflerMock.Setup(x => x.ShuffleAnswers(question)).Returns([null!, "B1", "C1", "D1"]);
+
+        uiMock.Setup(x => x.PromptAnswer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), 1, 1))
+            .Returns(string.Empty);
+
+        var sut = new QuizGame(apiClientMock.Object, uiMock.Object, shufflerMock.Object);
+
+        await sut.RunAsync();
+
+        uiMock.Verify(x => x.PromptAnswer(null!, null!, It.IsAny<IReadOnlyList<string>>(), 1, 1), Times.Once);
+        uiMock.Verify(x => x.ShowAnswerResult(true, string.Empty), Times.Once);
+        uiMock.Verify(x => x.ShowFinalResults(1, 1), Times.Once);
+    }
+
     private static QuizQuestion CreateQuestion(string questionText, string correctAnswer, List<string> incorrectAnswers)
     {
         return new QuizQuestion(
