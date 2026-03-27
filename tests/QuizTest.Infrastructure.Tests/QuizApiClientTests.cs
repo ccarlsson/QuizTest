@@ -94,6 +94,16 @@ public class QuizApiClientTests
     }
 
     [Fact]
+    public async Task GetQuestionsAsync_ThrowsWhenDeserializationReturnsNull()
+    {
+        using var client = CreateClientWithResponse("null");
+        var sut = new QuizApiClient(client);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => sut.GetQuestionsAsync());
+    }
+
+    [Fact]
     public async Task GetQuestionsAsync_ThrowsOnHttpError()
     {
         using var client = CreateClientWithResponse("", statusCode: HttpStatusCode.InternalServerError);
