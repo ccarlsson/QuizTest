@@ -14,15 +14,10 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<IQuizApiClient>(_ =>
+        services.AddHttpClient<IQuizApiClient, QuizApiClient>(client =>
         {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(apiBaseUrl),
-                Timeout = apiTimeout ?? TimeSpan.FromSeconds(30)
-            };
-
-            return new QuizApiClient(httpClient);
+            client.BaseAddress = new Uri(apiBaseUrl);
+            client.Timeout = apiTimeout ?? TimeSpan.FromSeconds(30);
         });
 
         services.AddSingleton<IAnswerShuffler, RandomAnswerShuffler>();

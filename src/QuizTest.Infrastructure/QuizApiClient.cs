@@ -5,27 +5,8 @@ using QuizTest.Infrastructure.Integrations.OpenTrivia;
 
 namespace QuizTest.Infrastructure;
 
-public sealed class QuizApiClient(HttpClient httpClient) : IQuizApiClient, IDisposable
+public sealed class QuizApiClient(HttpClient httpClient) : IQuizApiClient
 {
-
-    /// <summary>
-    /// Creates a new instance of QuizApiClient with default settings.
-    /// </summary>
-    /// <param name="baseUrl">The base URL of the Open Trivia API. Defaults to "https://opentdb.com".</param>
-    /// <returns>A new configured instance of QuizApiClient.</returns>
-    /// <remarks>
-    /// This factory method simplifies instantiation without using dependency injection.
-    /// </remarks>
-    public static QuizApiClient Create(string baseUrl = "https://opentdb.com")
-    {
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(baseUrl),
-            Timeout = TimeSpan.FromSeconds(30)
-        };
-        return new QuizApiClient(httpClient);
-    }
-
     /// <summary>
     /// Fetches quiz questions from the Open Trivia API with optional filters.
     /// </summary>
@@ -80,8 +61,4 @@ public sealed class QuizApiClient(HttpClient httpClient) : IQuizApiClient, IDisp
         return [.. result.TriviaCategories.Select(c => new QuizCategory(c.Id, c.Name))];
     }
 
-    /// <summary>
-    /// Disposes the underlying HTTP client resources.
-    /// </summary>
-    public void Dispose() => httpClient.Dispose();
 }
