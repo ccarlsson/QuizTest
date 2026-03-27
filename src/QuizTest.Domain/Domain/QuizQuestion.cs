@@ -15,5 +15,5 @@ public record QuizQuestion(
     string Category,
     string Question,
     string CorrectAnswer,
-    List<string> IncorrectAnswers
+    IReadOnlyList<string> IncorrectAnswers
 );
